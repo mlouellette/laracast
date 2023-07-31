@@ -2,67 +2,42 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\File; 
-use Illuminate\Support\Facades\Cache;
-use Spatie\YamlFrontMatter\YamlFrontMatter;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Post
+class Post extends Model
 {
-    public $title;
+    use HasFactory;
 
-    public $excerpt;
+    // makes every fields fillable but the ones in the array
+    protected $guarded = [];
 
-    public $date;
+    // Down the number of sql queries, eager loading by default
+    protected $with = ['category', 'author'];
 
-    public $body;
+    // turn off mass assignement unless we have control over the array
+    // protected $guarded = [];
 
-    public $slug;
+    // makes sthe following fields fillable
+    // protected $fillable = ['title'];
 
-    public function __construct($title, $excerpt, $date, $body, $slug)
+
+    // public function getRouteKeyName()
+    // {
+    //     return 'slug';
+    // }
+
+    public function category()
     {
-        $this->title = $title;
-        $this->excerpt = $excerpt;
-        $this->date = $date;
-        $this->body = $body;
-        $this->slug = $slug;
+        // Eloquent relationships: hasOne, hasMany, belongsTo, belongsToMany
+        return $this->belongsTo(Category::class);
     }
 
-    public static function all()
+    public function author()
     {
-
-        return cache()->rememberForever('posts.all', function () {
-
-            return collect(File::files(resource_path("posts")))
-            ->map(fn($file) => YamlFrontMatter::parseFile($file))
-            ->map(fn($document) => new Post(
-                $document->matter('title'),
-                $document->matter('excerpt'),
-                    $document->matter('date'),
-                    $document->body(),
-                    $document->matter('slug')
-                    ))
-                    ->sortByDesc('date');
-                    
-        });
-                    
+        // Eloquent relationships: hasOne, hasMany, belongsTo, belongsToMany
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public static function find($slug)
-    {
-        return static::all()->firstWhere('slug', $slug);
-    }
 
-    public static function findOrFail($slug)
-    {
-        // of all the blog posts find the one with a slug that matchs the one that was requested
-        $post = static::all()->firstWhere('slug', $slug);
-
-        if (! $post ) {
-            throw new ModelNotFoundException();
-
-        }
-
-        return $post;
-
-    }
 }
