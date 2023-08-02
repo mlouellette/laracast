@@ -27,7 +27,7 @@ Route::get('/', function () {
     
     // as soon as we perform a query, get the results
     return view('posts', [
-        'posts' => Post::latest()
+        'posts' => Post::latest()->get()
     ]);
 
 });
