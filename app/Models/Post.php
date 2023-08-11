@@ -48,6 +48,11 @@ class Post extends Model
         return 'slug';
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function category()
     {
         // Eloquent relationships: hasOne, hasMany, belongsTo, belongsToMany
