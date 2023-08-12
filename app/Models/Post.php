@@ -10,8 +10,7 @@ class Post extends Model
 {
     use HasFactory;
 
-    // makes every fields fillable but the ones in the array
-    protected $guarded = [];
+
 
     // Down the number of sql queries, eager loading by default
     protected $with = ['category', 'author'];
